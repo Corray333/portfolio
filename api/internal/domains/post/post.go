@@ -11,6 +11,7 @@ func MustInit(router chi.Router, storage storage.Storage) {
 	store := post_storage.New(storage)
 
 	router.Get("/api/posts", transport.GetPosts(store))
+	router.Get("/api/posts/{id}", transport.GetPost(store))
 	// router.With(auth.NewMiddleware()).Post("/api/posts", transport.CreatePost(store))
 	router.Post("/api/posts", transport.CreatePost(store))
 	router.Post("/api/upload/image", transport.UploadImage())

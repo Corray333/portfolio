@@ -16,13 +16,13 @@ func New(global store.Storage) *PostStorage {
 	}
 }
 
-func (store *PostStorage) SelectPost(post_type string, title string, id string, lang string, tags []string, user_agent string, offset uint64) ([]types.Post, error) {
+func (store *PostStorage) SelectPosts(post_type string, title string, id string, lang string, tags []string, user_agent string, offset uint64) ([]types.Post, error) {
 	where := sq.Eq{}
 	if title != "" {
 		where["title"] = title
 	}
 	if id != "" {
-		where["post_id"] = id
+		where["posts.post_id"] = id
 	}
 	if lang != "" {
 		where["lang"] = lang
@@ -30,7 +30,7 @@ func (store *PostStorage) SelectPost(post_type string, title string, id string, 
 	if len(tags) > 0 {
 		where["tags"] = tags
 	}
-	query := sq.StatementBuilder.PlaceholderFormat(sq.Dollar).Select("posts.post_id, title, cover, content, created_at").From("posts").
+	query := sq.StatementBuilder.PlaceholderFormat(sq.Dollar).Select("posts.post_id, title, description, cover, created_at, tag").From("posts").
 		Join("post_lang ON post_lang.post_id = posts.post_id").
 		LeftJoin("post_tag ON post_tag.post_id = posts.post_id").
 		Where(where).
@@ -39,6 +39,7 @@ func (store *PostStorage) SelectPost(post_type string, title string, id string, 
 	if err != nil {
 		return nil, err
 	}
+
 	rows, err := store.DB.Queryx(strQuery, args...)
 	if err != nil {
 		return nil, err
@@ -53,18 +54,25 @@ func (store *PostStorage) SelectPost(post_type string, title string, id string, 
 			return nil, err
 		}
 
+		if len(posts) > 0 && post.ID == posts[len(posts)-1].ID {
+			posts[len(posts)-1].Tags = append(posts[len(posts)-1].Tags, post.Tag)
+			continue
+		} else {
+			post.Tags = []string{post.Tag}
+		}
+
 		query = sq.StatementBuilder.PlaceholderFormat(sq.Dollar).Select(`type, number`).From("post_reaction").Where("post_id =?", post.ID)
 		strQuery, args, err = query.ToSql()
 		if err != nil {
 			return nil, err
 		}
-		rows, err = store.DB.Queryx(strQuery, args...)
+		reaction_rows, err := store.DB.Queryx(strQuery, args...)
 		if err != nil {
 			return nil, err
 		}
 		var reaction types.Reaction
-		for rows.Next() {
-			err = rows.StructScan(&reaction)
+		for reaction_rows.Next() {
+			err = reaction_rows.StructScan(&reaction)
 			if err != nil {
 				return nil, err
 			}
@@ -77,6 +85,60 @@ func (store *PostStorage) SelectPost(post_type string, title string, id string, 
 	return posts, nil
 }
 
+func (store *PostStorage) SelectPost(post_id string, lang string) (*types.Post, error) {
+	if lang == "" {
+		lang = "eng"
+	}
+	query := sq.StatementBuilder.PlaceholderFormat(sq.Dollar).Select("posts.post_id, title, description, cover, content, tag, created_at").From("posts").
+		Join("post_lang ON post_lang.post_id = posts.post_id").
+		LeftJoin("post_tag ON post_tag.post_id = posts.post_id").
+		Where("posts.post_id = ?", post_id).Where("lang =?", lang)
+	strQuery, args, err := query.ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := store.DB.Queryx(strQuery, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	post := types.Post{}
+	tempPost := types.Post{}
+	for rows.Next() {
+		err = rows.StructScan(&tempPost)
+		if err != nil {
+			return nil, err
+		}
+
+		if post.ID == 0 {
+			post = tempPost
+		}
+		post.Tags = append(post.Tags, tempPost.Tag)
+
+	}
+
+	query = sq.StatementBuilder.PlaceholderFormat(sq.Dollar).Select(`type, number`).From("post_reaction").Where("post_id =?", post.ID)
+	strQuery, args, err = query.ToSql()
+	if err != nil {
+		return nil, err
+	}
+	rows, err = store.DB.Queryx(strQuery, args...)
+	if err != nil {
+		return nil, err
+	}
+	var reaction types.Reaction
+	for rows.Next() {
+		err = rows.StructScan(&reaction)
+		if err != nil {
+			return nil, err
+		}
+		post.Reactions = append(post.Reactions, reaction)
+	}
+
+	return &post, nil
+}
+
 func (store *PostStorage) InsertPost(langs []types.Post) error {
 	tx, err := store.DB.Begin()
 	if err != nil {
@@ -87,9 +149,9 @@ func (store *PostStorage) InsertPost(langs []types.Post) error {
 	if err := row.Scan(&post_id); err != nil {
 		return err
 	}
-	query := sq.StatementBuilder.PlaceholderFormat(sq.Dollar).Insert("post_lang").Columns("post_id", "lang", "title", "content")
+	query := sq.StatementBuilder.PlaceholderFormat(sq.Dollar).Insert("post_lang").Columns("post_id", "lang", "title", "description", "content")
 	for _, lang := range langs {
-		query = query.Values(post_id, lang.Lang, lang.Title, lang.Content)
+		query = query.Values(post_id, lang.Lang, lang.Title, lang.Description, lang.Content)
 	}
 	sql, args, err := query.ToSql()
 	if err != nil {

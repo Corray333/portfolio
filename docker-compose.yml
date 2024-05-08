@@ -1,6 +1,18 @@
 version: '3.8'
 
 services:
+  api:
+    build: 
+      context: ./api
+      dockerfile: Dockerfile
+    volumes:
+      - ./api:/app
+    ports:
+      - 3001:3001
+    command: make run
+    depends_on:
+      - db
+
   app:
     image: node:latest
     command: npm run dev

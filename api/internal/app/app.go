@@ -7,6 +7,7 @@ import (
 
 	"github.com/Corray333/portfolio/internal/domains/admin"
 	"github.com/Corray333/portfolio/internal/domains/post"
+	"github.com/Corray333/portfolio/internal/server/logger"
 	"github.com/Corray333/portfolio/internal/storage"
 	"github.com/go-chi/chi/v5"
 )
@@ -19,6 +20,8 @@ type App struct {
 func New() *App {
 	router := chi.NewMux()
 	store := storage.New()
+
+	router.Use(logger.New(slog.Default()))
 
 	fs := http.FileServer(http.Dir("../files/images"))
 	router.Handle("/api/images/*", http.StripPrefix("/api/images", fs))

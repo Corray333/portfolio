@@ -4,6 +4,8 @@ import { ref, onMounted } from 'vue'
 const cursor = ref(null)
 
 onMounted(() => {
+  if (!localStorage.getItem('lang')) localStorage.setItem('lang','eng')
+
   document.addEventListener('mouseover', (e) => {
     if (e.target.closest('.pointer')) {
       document.querySelector('.cursor').style.transform = 'translateX(-50%) translateY(-50%) scale(0)'

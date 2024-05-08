@@ -61,3 +61,26 @@ a{
 .btn:hover a::after {
     transform: scaleX(1);
 }
+
+.content {
+    h1 {
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+    h2,h3{
+        font-weight: bold;
+    }
+    ul{
+        list-style:disc;
+        list-style-position: inside;
+    }
+    ol{
+        list-style: decimal;
+        list-style-position: inside;
+    }
+    a{
+        color: #363636;
+        text-decoration: underline;
+    }
+
+}

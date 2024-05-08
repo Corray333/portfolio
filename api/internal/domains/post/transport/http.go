@@ -11,12 +11,14 @@ import (
 	"strconv"
 
 	"github.com/Corray333/portfolio/internal/domains/post/types"
+	"github.com/go-chi/chi/v5"
 )
 
 const MaxFileSize = 5 << 20
 
 type Storage interface {
-	SelectPost(post_type string, title string, id string, lang string, tags []string, user_agent string, offset uint64) ([]types.Post, error)
+	SelectPosts(post_type string, title string, id string, lang string, tags []string, user_agent string, offset uint64) ([]types.Post, error)
+	SelectPost(post_id string, lang string) (*types.Post, error)
 	InsertPost(langs []types.Post) error
 }
 
@@ -39,12 +41,37 @@ func GetPosts(store Storage) http.HandlerFunc {
 			}
 		}
 
-		posts, err := store.SelectPost(post_type, title, post_id, lang, tags, r.UserAgent(), uintOffset)
+		posts, err := store.SelectPosts(post_type, title, post_id, lang, tags, r.UserAgent(), uintOffset)
 		if err != nil {
 			slog.Error("error getting posts", err)
 			w.WriteHeader(http.StatusInternalServerError)
 		}
-		if err := json.NewEncoder(w).Encode(posts); err != nil {
+		if err := json.NewEncoder(w).Encode(struct {
+			Posts []types.Post `json:"posts"`
+		}{
+			Posts: posts,
+		}); err != nil {
+			slog.Error("error encoding or sending posts: ", err)
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+	}
+}
+
+func GetPost(store Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		post_id := chi.URLParam(r, "id")
+		lang := r.URL.Query().Get("lang")
+
+		post, err := store.SelectPost(post_id, lang)
+		if err != nil {
+			slog.Error("error getting posts", err)
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+		if err := json.NewEncoder(w).Encode(struct {
+			Post *types.Post `json:"post"`
+		}{
+			Post: post,
+		}); err != nil {
 			slog.Error("error encoding or sending posts: ", err)
 			w.WriteHeader(http.StatusInternalServerError)
 		}
@@ -110,9 +137,9 @@ func UploadImage() http.HandlerFunc {
 		}
 
 		if err := json.NewEncoder(w).Encode(struct {
-			FileName string `json:"file_name"`
+			URL string `json:"url"`
 		}{
-			FileName: "/images/" + fileName,
+			URL: "/api/images/" + fileName,
 		}); err != nil {
 			slog.Error("error encoding or sending file name: ", err)
 			w.WriteHeader(http.StatusInternalServerError)
