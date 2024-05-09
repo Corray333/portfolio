@@ -83,4 +83,24 @@ a{
         text-decoration: underline;
     }
 
+
+    img[alt$=">"] {
+        float: right;
+        width: 50%;
+      }
+      
+      img[alt$="<"] {
+        float: left;
+        width: 50%;
+      }
+      
+      img[alt$="><"] {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        margin: auto;
+        float: none!important;
+        width: 50%;
+      }
+
 }

@@ -33,6 +33,7 @@ onBeforeMount(() => {
     <section v-if="post" class=" w-full min-h-screen p-20 flex flex-col items-center ">
         <article class="w-full max-w-[60rem]">
             <article class="header">
+                <img :src="post.cover" class="w-full h-48 object-cover" alt="">
                 <h1 class="text-2xl">{{ post.title }}</h1>
                 <p>{{ post.description }}</p>
             </article>

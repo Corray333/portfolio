@@ -139,15 +139,15 @@ func (store *PostStorage) SelectPost(post_id string, lang string) (*types.Post, 
 	return &post, nil
 }
 
-func (store *PostStorage) InsertPost(langs []types.Post) error {
+func (store *PostStorage) InsertPost(langs []types.Post) (int, error) {
 	tx, err := store.DB.Begin()
 	if err != nil {
-		return err
+		return 0, err
 	}
 	var post_id int
 	row := tx.QueryRow("INSERT INTO posts VALUES(DEFAULT, $1, DEFAULT, DEFAULT, 1) RETURNING post_id;", langs[0].Cover)
 	if err := row.Scan(&post_id); err != nil {
-		return err
+		return 0, err
 	}
 	query := sq.StatementBuilder.PlaceholderFormat(sq.Dollar).Insert("post_lang").Columns("post_id", "lang", "title", "description", "content")
 	for _, lang := range langs {
@@ -155,11 +155,11 @@ func (store *PostStorage) InsertPost(langs []types.Post) error {
 	}
 	sql, args, err := query.ToSql()
 	if err != nil {
-		return err
+		return 0, err
 	}
 	_, err = tx.Exec(sql, args...)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	query = sq.StatementBuilder.PlaceholderFormat(sq.Dollar).Insert("post_tag").Columns("post_id", "tag")
@@ -168,11 +168,11 @@ func (store *PostStorage) InsertPost(langs []types.Post) error {
 	}
 	sql, args, err = query.ToSql()
 	if err != nil {
-		return err
+		return 0, err
 	}
 	_, err = tx.Exec(sql, args...)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	query = sq.StatementBuilder.PlaceholderFormat(sq.Dollar).Insert("post_reaction").Columns("post_id", "type", "number")
@@ -181,13 +181,13 @@ func (store *PostStorage) InsertPost(langs []types.Post) error {
 	}
 	sql, args, err = query.ToSql()
 	if err != nil {
-		return err
+		return 0, err
 	}
 	_, err = tx.Exec(sql, args...)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	return tx.Commit()
+	return post_id, tx.Commit()
 
 }

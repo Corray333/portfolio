@@ -355,7 +355,7 @@ const pickedProject = ref(portfolioProjects.value[0])
 
         <div class="bottom w-full h-screen grid grid-rows-4 grid-cols-1">
             <section id="contact_container" class=" row-span-3 w-full h-full p-20 ">
-                <div class="content flex flex-col    items-center justify-center h-full">
+                <div class=" flex flex-col    items-center justify-center h-full">
                     <h1 class="text-[4rem] text-center">Contact me</h1>
                     <div class="container flex items-center justify-center gap-3">
                         <div class="contact_form flex flex-col gap-4">
@@ -382,12 +382,16 @@ const pickedProject = ref(portfolioProjects.value[0])
                         </div>
                         <span class="h-32 w-[2px] bg-dark"></span>
                         <div class="contact_networks flex flex-col items-center">
-                            <h1>Or use my social networks:</h1>
+                            <h1 class=" font-normal">Or use my social networks:</h1>
                             <div class="flex text-[3rem] z-50">
-                                <Icon class="pointer duration-300 hover:bg-dark hover:text-white p-2 rounded-full"
-                                    name="mdi:telegram" />
-                                <Icon class="pointer duration-300 hover:bg-dark hover:text-white p-2 rounded-full"
-                                    name="mdi:github" />
+                                <a href="https://t.me/corray9" target="_blank">
+                                    <Icon class="pointer duration-300 hover:bg-dark hover:text-white p-2 rounded-full"
+                                        name="mdi:telegram" />
+                                </a>
+                                <a href="https://github.com/Corray333" target="_blank">
+                                    <Icon class="pointer duration-300 hover:bg-dark hover:text-white p-2 rounded-full"
+                                        name="mdi:github" />
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -433,8 +437,9 @@ const pickedProject = ref(portfolioProjects.value[0])
 .inpt:hover a::after {
     transform: scaleX(1);
 }
-.inpt:hover input{
-    color:black !important;
+
+.inpt:hover input {
+    color: black !important;
 }
 
 .title>svg {

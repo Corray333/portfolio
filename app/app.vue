@@ -25,6 +25,7 @@ onMounted(() => {
   })
 })
 
+
 let slideUp = (target, duration = 500) => {
   target.style.transitionProperty = 'height, margin, padding';
   target.style.transitionDuration = duration + 'ms';
@@ -111,7 +112,7 @@ const headerOpened = ref(false)
     <button @click="slideToggle()" class="burger pointer fixed right-0 top-0 mt-10 mr-10 p-2 duration-300 group hover:bg-white rounded-md">
         <span class="group-hover:bg-dark"></span><span class="group-hover:bg-dark"></span><span class="group-hover:bg-dark"></span>
     </button>
-    <navbar class=" navbar fixed hidden" />
+    <navbar class=" navbar fixed hidden" @route="slideToggle()"/>
     <div class="nav_bg fixed bg-dark w-screen h-screen z-30 hidden">
       <div class="marquee text-white uppercase text-[4rem] whitespace-nowrap absolute right-0 top-0 rotate-45 font-bold" style="line-height: 0.8; width: 180vh;">
         <p class="marquee1">navigation navigation navigation navigation navigation navigation navigation navigation navigation navigation navigation navigation navigation</p>

@@ -1,6 +1,9 @@
 <script setup>
 import {ref} from 'vue'
 import axios from 'axios'
+import {useRouter} from 'vue-router'
+
+const router = useRouter()
 
 const login = ref("")
 const password = ref("")
@@ -14,6 +17,7 @@ const submit = async ()=>{
         console.log(data)
         localStorage.setItem('Authorization',data.authorization)
         localStorage.setItem('Refresh',data.refresh)
+        router.push(`/admin`)
     } catch(err){
         console.log(err)
     }

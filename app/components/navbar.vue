@@ -9,13 +9,13 @@
     <section class=" p-20 flex flex-col text-2xl justify-end text-white bg-transparent w-screen h-screen z-50">
         <ul>
             <li class="btn pointer">
-                <nuxt-link to="/">home</nuxt-link>
+                <nuxt-link to="/" @click="$emit('route')">home</nuxt-link>
             </li>
             <li class="btn pointer">
-                <nuxt-link to="/blog">blog</nuxt-link>
+                <nuxt-link to="/blog" @click="$emit('route')">blog</nuxt-link>
             </li>
             <li class="btn pointer">
-                <nuxt-link>contacts</nuxt-link>
+                <nuxt-link @click="$emit('route')">contacts</nuxt-link>
             </li>
         </ul>
     </section>

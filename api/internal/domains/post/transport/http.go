@@ -19,7 +19,7 @@ const MaxFileSize = 5 << 20
 type Storage interface {
 	SelectPosts(post_type string, title string, id string, lang string, tags []string, user_agent string, offset uint64) ([]types.Post, error)
 	SelectPost(post_id string, lang string) (*types.Post, error)
-	InsertPost(langs []types.Post) error
+	InsertPost(langs []types.Post) (int, error)
 }
 
 func GetPosts(store Storage) http.HandlerFunc {
@@ -93,13 +93,21 @@ func CreatePost(store Storage) http.HandlerFunc {
 			return
 		}
 
-		if err := store.InsertPost(langs); err != nil {
+		post_id, err := store.InsertPost(langs)
+		if err != nil {
 			slog.Error("error inserting post: ", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		w.WriteHeader(http.StatusCreated)
+		if err := json.NewEncoder(w).Encode(struct {
+			ID int `json:"id"`
+		}{
+			ID: post_id,
+		}); err != nil {
+			slog.Error("error encoding or sending posts: ", err)
+			w.WriteHeader(http.StatusInternalServerError)
+		}
 	}
 }
 
