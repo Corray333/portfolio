@@ -191,3 +191,24 @@ func (store *PostStorage) InsertPost(langs []types.Post) (int, error) {
 	return post_id, tx.Commit()
 
 }
+
+func (store *PostStorage) UpdateReaction(post_id string, increment, decriment int) error {
+	tx, err := store.DB.Begin()
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec("UPDATE post_reaction SET number = number + 1 WHERE post_id = $1 AND type = $2", post_id, increment)
+	if err != nil {
+		return err
+	}
+
+	if decriment != 0 {
+		_, err = tx.Exec("UPDATE post_reaction SET number = number - 1 WHERE post_id = $1 AND type = $2", post_id, decriment)
+		if err != nil {
+			return err
+		}
+	}
+
+	return tx.Commit()
+
+}

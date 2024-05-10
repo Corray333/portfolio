@@ -20,6 +20,7 @@ type Storage interface {
 	SelectPosts(post_type string, title string, id string, lang string, tags []string, user_agent string, offset uint64) ([]types.Post, error)
 	SelectPost(post_id string, lang string) (*types.Post, error)
 	InsertPost(langs []types.Post) (int, error)
+	UpdateReaction(post_id string, increment, decrement int) error
 }
 
 func GetPosts(store Storage) http.HandlerFunc {
@@ -153,5 +154,27 @@ func UploadImage() http.HandlerFunc {
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 
+	}
+}
+
+func UpdateReaction(store Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		post_id := chi.URLParam(r, "id")
+
+		var request struct {
+			Increment int `json:"increment"`
+			Decrement int `json:"decrement"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+			slog.Error("error decoding request: ", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		if err := store.UpdateReaction(post_id, request.Increment, request.Decrement); err != nil {
+			slog.Error("error updating reaction: ", err)
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+		w.WriteHeader(http.StatusOK)
 	}
 }

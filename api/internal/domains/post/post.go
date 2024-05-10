@@ -13,6 +13,7 @@ func MustInit(router chi.Router, storage storage.Storage) {
 
 	router.Get("/api/posts", transport.GetPosts(store))
 	router.Get("/api/posts/{id}", transport.GetPost(store))
+	router.Post("/api/posts/{id}/reactions", transport.UpdateReaction(store))
 	router.With(auth.NewMiddleware()).Post("/api/posts", transport.CreatePost(store))
 	router.With(auth.NewMiddleware()).Post("/api/upload/image", transport.UploadImage())
 }

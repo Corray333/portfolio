@@ -1,6 +1,13 @@
 <script setup>
 
-
+const switchLanguage = ()=>{
+    if (localStorage.getItem('lang') === 'ru') {
+        localStorage.setItem('lang', 'eng')
+    } else {
+        localStorage.setItem('lang', 'ru')
+    }
+    location.reload()
+}
 
 
 </script>
@@ -16,6 +23,9 @@
             </li>
             <li class="btn pointer">
                 <nuxt-link @click="$emit('route')">contacts</nuxt-link>
+            </li>
+            <li>
+                <div class="btn"><a class="bg-dark pointer" @click="switchLanguage">switch blog language</a></div>
             </li>
         </ul>
     </section>
