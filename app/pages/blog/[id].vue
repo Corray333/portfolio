@@ -98,7 +98,8 @@ const reactions = ref(['mdi:thumb-up', 'mdi:thumb-down', 'mdi:heart', 'mdi:fire'
 <template>
     <section v-if="post" class=" w-full min-h-screen p-20 flex flex-col items-center ">
         <article class="w-full max-w-[60rem]">
-            <article class="header">
+            <article class="header relative">
+                <nuxt-link to="/blog" class="p-2 absolute pointer rounded-full right-full mr-5 hover:bg-dark group duration-300"><Icon class="text-dark duration-300 group-hover:text-white text-4xl" name="mdi:undo" /></nuxt-link>
                 <img :src="post.cover" class="w-full object-cover mb-5" alt="">
                 <div class="flex gap-5 my-2">
                     <p v-for="(tag, i) of post.tags" :key="i" class=" text-white bg-dark p-2 text-sm">{{ tag }}</p>

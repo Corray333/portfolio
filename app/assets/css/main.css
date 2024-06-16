@@ -83,7 +83,9 @@ a{
         text-decoration: underline;
     }
 
-
+    img{
+        width: 100%;
+    }
     img[alt$=">"] {
         float: right;
         width: 50%;

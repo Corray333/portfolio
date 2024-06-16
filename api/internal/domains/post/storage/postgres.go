@@ -139,6 +139,58 @@ func (store *PostStorage) SelectPost(post_id string, lang string) (*types.Post, 
 	return &post, nil
 }
 
+// func (store *PostStorage) SelectPostAllLangs(post_id string) ([]*types.Post, error) {
+
+// 	query := sq.StatementBuilder.PlaceholderFormat(sq.Dollar).Select("posts.post_id, title, description, cover, content, tag, created_at").From("posts").
+// 		Join("post_lang ON post_lang.post_id = posts.post_id").
+// 		LeftJoin("post_tag ON post_tag.post_id = posts.post_id").
+// 		Where("posts.post_id = ?", post_id)
+// 	strQuery, args, err := query.ToSql()
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	rows, err := store.DB.Queryx(strQuery, args...)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	posts := []types.Post{}
+// 	tempPost := types.Post{}
+// 	for rows.Next() {
+// 		err = rows.StructScan(&tempPost)
+// 		if err != nil {
+// 			return nil, err
+// 		}
+
+// 		if post.ID == 0 {
+// 			post = tempPost
+// 		}
+// 		post.Tags = append(post.Tags, tempPost.Tag)
+
+// 	}
+
+// 	query = sq.StatementBuilder.PlaceholderFormat(sq.Dollar).Select(`type, number`).From("post_reaction").Where("post_id =?", post.ID)
+// 	strQuery, args, err = query.ToSql()
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	rows, err = store.DB.Queryx(strQuery, args...)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	var reaction types.Reaction
+// 	for rows.Next() {
+// 		err = rows.StructScan(&reaction)
+// 		if err != nil {
+// 			return nil, err
+// 		}
+// 		post.Reactions = append(post.Reactions, reaction)
+// 	}
+
+// 	return &post, nil
+// }
+
 func (store *PostStorage) InsertPost(langs []types.Post) (int, error) {
 	tx, err := store.DB.Begin()
 	if err != nil {

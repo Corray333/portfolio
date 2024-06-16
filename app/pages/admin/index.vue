@@ -45,12 +45,12 @@ onBeforeMount(async ()=>{
 
 <template>
   <section class="p-20 w-full min-h-screen">
-    <h1 class=" text-[4rem] text-center flex items-center gap-2 justify-center">Blog <button @click="router.push(`/admin/new-post`)" class="z-50 relative pointer text-4xl  duration-300 hover:bg-dark hover:text-white p-2 rounded-full w-12 h-12 flex justify-center items-center"><Icon name="mdi:plus" /></button></h1>
+    <h1 class=" text-[4rem] text-center flex items-center gap-2 justify-center">Admin <button @click="router.push(`/admin/new-post`)" class="z-50 relative pointer text-4xl  duration-300 hover:bg-dark hover:text-white p-2 rounded-full w-12 h-12 flex justify-center items-center"><Icon name="mdi:plus" /></button></h1>
     <div class="posts flex flex-col items-center">
         <div class="wrapper  w-full max-w-[50rem] px-10">
             <div class="top h-10 border-x-2 border-dashed border-dark"></div>
         </div>
-        <PostCard v-for="(post,i) of posts" :key="i" :post="post" />
+        <PostCard v-for="(post,i) of posts" :key="i" :post="post" :link="`/admin/${post.id}`" />
         <div class="wrapper  w-full max-w-[50rem] px-10">
             <div class="top h-10 border-x-2 border-dashed border-dark"></div>
         </div>

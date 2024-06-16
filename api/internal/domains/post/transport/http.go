@@ -21,6 +21,7 @@ type Storage interface {
 	SelectPost(post_id string, lang string) (*types.Post, error)
 	InsertPost(langs []types.Post) (int, error)
 	UpdateReaction(post_id string, increment, decrement int) error
+	// SelectPostAllLangs(post_id string) ([]*types.Post, error)
 }
 
 func GetPosts(store Storage) http.HandlerFunc {
@@ -78,6 +79,26 @@ func GetPost(store Storage) http.HandlerFunc {
 		}
 	}
 }
+
+// func GetPostAllLangs(store Storage) http.HandlerFunc {
+// 	return func(w http.ResponseWriter, r *http.Request) {
+// 		post_id := chi.URLParam(r, "id")
+
+// 		posts, err := store.SelectPostAllLangs(post_id)
+// 		if err != nil {
+// 			slog.Error("error getting posts", err)
+// 			w.WriteHeader(http.StatusInternalServerError)
+// 		}
+// 		if err := json.NewEncoder(w).Encode(struct {
+// 			Posts []*types.Post `json:"post"`
+// 		}{
+// 			Posts: posts,
+// 		}); err != nil {
+// 			slog.Error("error encoding or sending posts: ", err)
+// 			w.WriteHeader(http.StatusInternalServerError)
+// 		}
+// 	}
+// }
 
 func CreatePost(store Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

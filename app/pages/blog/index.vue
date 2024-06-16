@@ -28,7 +28,7 @@ onBeforeMount(()=>{
         <div class="wrapper  w-full max-w-[50rem] px-10">
             <div class="top h-10 border-x-2 border-dashed border-dark"></div>
         </div>
-        <PostCard v-for="(post,i) of posts" :key="i" :post="post" />
+        <PostCard v-for="(post,i) of posts" :key="i" :post="post" :link="`/blog/${post.id}`" />
         <div class="wrapper  w-full max-w-[50rem] px-10">
             <div class="top h-10 border-x-2 border-dashed border-dark"></div>
         </div>
